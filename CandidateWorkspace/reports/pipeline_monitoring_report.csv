@@ -1,0 +1,2 @@
+pipeline_name,run_id,execution_timestamp,pipeline_status,functional_source_records,functional_target_records,performance_source_records,performance_target_records,ingestion_time_seconds,transformation_time_seconds,database_load_time_seconds,query_time_seconds,memory_usage_mb,throughput_records_per_second
+reliable_file_ingestion_pipeline,a14fa797-33aa-49fb-87be-45c7110d5084,2026-11-14T12:18:40.227125+00:00,SUCCESS,950,950,100000,100000,0.4376,0.1512,0.3776,0.0958,21.39,169828.36

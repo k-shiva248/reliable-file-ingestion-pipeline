@@ -1,0 +1,8 @@
+metric,count
+Total Input Records,101010
+Valid Records,99940
+Rejected Records,1070
+Duplicate Records,1010
+Missing Value Violations,20
+Business Rule Violations,30
+Foreign Key Violations,10

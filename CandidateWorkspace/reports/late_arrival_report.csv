@@ -1,0 +1,6 @@
+metric,count
+Late Input Records,10
+Valid Late Records,10
+Rejected Late Records,0
+Late Records Published,10
+Records After Replay,100000

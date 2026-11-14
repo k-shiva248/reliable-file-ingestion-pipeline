@@ -1,0 +1,9 @@
+metric,value
+Input Records,100000.0
+Processed Records,100000.0
+Ingestion Time (seconds),0.4376
+Transformation Time (seconds),0.1512
+Database Load Time (seconds),0.3776
+Query Execution Time (seconds),0.0958
+Memory Usage (MB),21.39
+Processing Throughput (records/second),169828.36
