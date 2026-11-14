@@ -1,272 +1,257 @@
-# Reliable File Ingestion & Data Pipeline
+# Reliable File Ingestion and Data Pipeline
 
-## 1. Project Overview
+## Project Overview
 
-This project implements a reliable, end-to-end data ingestion and processing pipeline using Python, Pandas, and DuckDB.
+This project implements an end-to-end reliable data ingestion and processing pipeline using Python, Pandas, NumPy, and DuckDB.
 
-The pipeline processes incoming CSV files through multiple stages: ingestion, validation, data cleaning, transformation, and publishing into a DuckDB analytical warehouse.
+The pipeline processes e-commerce order data through multiple stages, including ingestion, validation, transformation, duplicate detection, late-arriving data handling, and publishing into an analytical warehouse.
 
-It is designed to handle common real-world data engineering challenges such as duplicate records, invalid data, late-arriving files, repeated file delivery, and pipeline recovery.
+The main objective is to build a reliable and reproducible data pipeline that handles data quality issues, duplicate records, invalid data, and large datasets.
 
-## 2. Project Objectives
+## Architecture
 
-- Build an end-to-end data pipeline.
-- Separate raw, validated, curated, and quarantine data.
-- Validate incoming records before publishing.
-- Identify and handle duplicate records.
-- Handle invalid and missing values.
-- Support late-arriving data and replay.
-- Make publishing idempotent.
-- Maintain pipeline logs and execution reports.
-- Test pipeline functionality and data quality.
-- Measure performance using large datasets.
+```text
+             Incoming Data
+                   |
+                   v
+                Raw Zone
+                   |
+                   v
+            Validation Layer
+                   |
+             +-----+-----+
+             |           |
+             v           v
+        Valid Records  Invalid Records
+             |           |
+             v           v
+       Validated Zone  Quarantine Zone
+             |
+             v
+        Transformation
+             |
+             v
+          Curated Zone
+             |
+             v
+        DuckDB Warehouse
+             |
+             v
+       Analytical Queries
+```
 
-## 3. Technology Stack
+## Technology Stack
 
 | Technology | Purpose |
 |---|---|
 | Python | Pipeline development |
-| Pandas | Data cleaning and transformation |
+| Pandas | Data processing and transformation |
 | NumPy | Data generation and numerical operations |
 | DuckDB | Analytical data warehouse |
 | SQL | Data querying and validation |
-| Jupyter Notebook | Development and execution |
+| Jupyter Notebook | Development environment |
 | Pytest | Automated testing |
-| Git & GitHub | Version control |
+| Git and GitHub | Version control |
 
-## 4. Pipeline Architecture
+## Project Features
 
-The pipeline follows a layered data processing approach.
+1. Batch file ingestion
+2. Raw data storage
+3. Schema validation
+4. Business rule validation
+5. Null value detection
+6. Duplicate record detection
+7. Invalid record quarantine
+8. Data cleaning and transformation
+9. Idempotent data publishing
+10. Late-arriving data handling
+11. Replay and backfill workflow
+12. DuckDB analytical warehouse
+13. Data reconciliation
+14. Logging and monitoring
+15. Performance testing with 100,000 records
+16. Automated validation tests
 
-```text
-Incoming CSV Files
-        |
-        v
-   Ingestion Layer
-        |
-        v
-     RAW Layer
-        |
-        v
-  Validation Layer
-        |
-        +-------------------+
-        |                   |
-        v                   v
-  Validated Data       Quarantine Data
-        |
-        v
- Transformation Layer
-        |
-        v
-   Curated Layer
-        |
-        v
- Publishing Layer
-        |
-        v
- DuckDB Warehouse
-        |
-        v
- Reports and Monitoring
+## Data Pipeline Layers
+
+### 1. Incoming Zone
+Receives source CSV files containing transactional order data.
+
+### 2. Raw Zone
+Stores ingested source data for further processing.
+
+### 3. Validated Zone
+Stores records that pass schema and business validation.
+
+### 4. Curated Zone
+Contains cleaned and transformed data ready for analytical processing.
+
+### 5. Quarantine Zone
+Stores invalid records separately for investigation and correction.
+
+## Data Warehouse Design
+
+The warehouse uses a dimensional data model.
+
+### Dimension Tables
+
+- `dim_customers` – Customer information.
+- `dim_products` – Product information.
+
+### Fact Tables
+
+- `fact_orders` – Functional order-level analytical data.
+- `fact_orders_performance` – Separate performance-test data.
+
+**Fact grain:** One row per order.
+
+## Data Quality and Validation
+
+The pipeline checks:
+
+- Required columns
+- Missing values
+- Duplicate order IDs
+- Invalid quantities
+- Invalid prices
+- Invalid order statuses
+- Customer and product references
+- Foreign key integrity
+
+Invalid records are separated into the quarantine zone.
+
+## Reliability Features
+
+- Duplicate detection
+- Idempotent publishing
+- Late-arriving data processing
+- Replay and backfill support
+- Source-to-target reconciliation
+- Execution logging
+- Pipeline status monitoring
+
+## Performance Testing
+
+A separate performance test uses a generated dataset of 100,000 order records.
+
+Performance testing covers:
+
+- Data ingestion time
+- Data transformation time
+- Memory usage
+- Processing throughput
+- Warehouse loading
+- Query execution
+
+Performance results are available in:
+
+`reports/performance_report.csv`
+
+## Automated Testing
+
+The project includes notebook-based validation tests and a standalone pytest test module.
+
+### Notebook Tests
+
+9 validation checks covering data quality, database integrity, empty input, duplicate records, invalid data, and idempotency.
+
+### Pytest Tests
+
+8 tests covering:
+
+- Happy path
+- Empty input
+- Duplicate records
+- Missing required fields
+- Invalid quantity
+- Invalid price
+- Invalid status
+- Malformed schema
+
+Run the tests:
+
+```bash
+python -m pytest tests/test_pipeline.py -v
 ```
 
-## 5. Project Folder Structure
+## Monitoring and Logging
+
+Pipeline execution details are recorded in:
+
+- `logs/pipeline_execution.log`
+- `reports/pipeline_monitoring_report.csv`
+
+Monitoring includes record counts, execution status, reconciliation results, and errors.
+
+## Project Structure
 
 ```text
-CandidateWorkspace/
+reliable-file-ingestion-pipeline/
 │
-├── 01_data_pipeline.ipynb
+├── Data Pipeline/
+│   └── 01_data_pipeline.ipynb
 │
-├── data/
-│   ├── incoming/
-│   ├── raw/
-│   ├── validated/
-│   ├── curated/
-│   └── quarantine/
-│
-├── warehouse/
-│   └── warehouse.duckdb
+├── README.md
+├── data.zip
 │
 ├── logs/
 │
 ├── reports/
+│   ├── performance_report.csv
+│   └── pipeline_monitoring_report.csv
 │
-├── tests/
-│   └── test_pipeline.py
-│
-├── README.md
-├── requirements.txt
-├── DATA_DICTIONARY.md
-├── DESIGN_NOTES.md
-└── .gitignore
+└── tests/
+    └── test_pipeline.py
 ```
 
-## 6. Pipeline Workflow
+Additional documentation and data folders can be added as the project is organized.
 
-### Step 1: Data Ingestion
+## Setup and Execution
 
-- Read incoming CSV files using Pandas.
-- Load source data into the raw layer.
-- Track source file information.
-- Support processing of newly received files.
-
-### Step 2: Data Validation
-
-- Check required columns.
-- Validate data types.
-- Identify missing values.
-- Check invalid quantities and prices.
-- Validate business rules.
-- Identify duplicate records.
-
-Invalid records are separated into the quarantine layer.
-
-### Step 3: Data Transformation
-
-- Clean and standardize data.
-- Convert columns into appropriate data types.
-- Remove or handle duplicate records according to business rules.
-- Prepare clean data for analytical processing.
-
-### Step 4: Late-Arriving Data Handling
-
-- Identify late-arriving records.
-- Process late files through the pipeline.
-- Support replay and backfill of previously received data.
-
-### Step 5: Data Publishing
-
-- Load curated records into DuckDB.
-- Use SQL to publish data into warehouse tables.
-- Handle duplicate delivery using idempotent publishing logic.
-- Avoid inserting duplicate business records.
-
-### Step 6: Logging and Monitoring
-
-- Maintain pipeline execution logs.
-- Record processing status.
-- Track successful and failed records.
-- Generate monitoring and performance reports.
-
-### Step 7: Testing
-
-- Test empty input.
-- Test duplicate records.
-- Test missing required fields.
-- Test invalid quantities and prices.
-- Test invalid statuses.
-- Test malformed input schemas.
-- Validate publishing behavior.
-
-## 7. Data Warehouse Design
-
-The warehouse uses a dimensional modelling approach.
-
-Example tables:
-
-| Table | Description |
-|---|---|
-| dim_customers | Customer information |
-| dim_products | Product information |
-| fact_orders | Order-level transactional data |
-
-The fact table stores business transactions, while dimension tables provide descriptive information for analytical queries.
-
-## 8. Reliability Features
-
-The project focuses on the following reliability requirements:
-
-- **Data validation:** Prevent invalid records from entering the curated layer.
-- **Quarantine:** Separate bad records for investigation.
-- **Duplicate handling:** Identify repeated records.
-- **Idempotency:** Prevent duplicate publishing when the same data is processed again.
-- **Late-arriving data:** Support processing of delayed files.
-- **Replay and backfill:** Allow previously received data to be processed again.
-- **Logging:** Maintain information about pipeline execution.
-- **Testing:** Verify important pipeline scenarios.
-
-## 9. Performance Testing
-
-A larger synthetic dataset is used to evaluate pipeline performance.
-
-Performance measurements can include:
-
-- Number of records processed.
-- Data ingestion time.
-- Transformation time.
-- Publishing time.
-- Total execution time.
-
-Actual performance results are available in the generated reports.
-
-## 10. Installation and Setup
-
-### Prerequisites
-
-- Python 3.10 or later
-- Jupyter Notebook
-- Git
-
-### Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### Clone the repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/k-shiva248/reliable-file-ingestion-pipeline.git
 ```
 
-### Navigate to the project folder
+### 2. Navigate to the project directory
 
 ```bash
 cd reliable-file-ingestion-pipeline
 ```
 
-### Run the notebook
+### 3. Install dependencies
 
-Open Jupyter Notebook:
+```bash
+pip install pandas numpy duckdb jupyter pytest
+```
+
+### 4. Launch Jupyter Notebook
 
 ```bash
 jupyter notebook
 ```
 
-Open `01_data_pipeline.ipynb` and execute the notebook cells in order.
+Open `Data Pipeline/01_data_pipeline.ipynb` and execute the cells in sequence.
 
-The pipeline creates the required local data folders and DuckDB warehouse as configured in the notebook.
+## Storage Implementation
 
-## 11. Expected Outputs
+This project uses local directories to simulate data storage zones such as raw, validated, curated, and quarantine.
 
-After successful execution, the project generates:
+DuckDB is used as the local analytical warehouse. The implementation does not require cloud infrastructure.
 
-- Raw input data.
-- Validated datasets.
-- Curated datasets.
-- Quarantined invalid records.
-- DuckDB warehouse tables.
-- Pipeline execution logs.
-- Performance reports.
-- Monitoring reports.
+## Limitations and Future Improvements
 
-## 12. Limitations and Future Improvements
+- Integrate cloud object storage such as AWS S3 or Azure Blob Storage.
+- Orchestrate workflows using Apache Airflow.
+- Add a cloud-based analytical warehouse such as Snowflake.
+- Implement CI/CD for automated testing and deployment.
+- Improve historical tracking of changing records.
 
-The current implementation uses local files and DuckDB to simulate a data engineering pipeline.
+## Author
 
-Possible future improvements:
+**Shiva Prasad**
 
-- Integrate cloud object storage such as Amazon S3 or Azure Blob Storage.
-- Schedule workflows using Apache Airflow.
-- Use dbt for warehouse transformations.
-- Add automated retries and recovery mechanisms.
-- Add pipeline alerting and dashboards.
-- Deploy the pipeline to a cloud environment.
+GitHub: https://github.com/k-shiva248
 
-## 13. Conclusion
-
-This project demonstrates the development of a reliable data ingestion pipeline with validation, transformation, data quality checks, duplicate handling, late-arriving data support, and analytical publishing.
-
-It demonstrates practical data engineering concepts using Python, Pandas, SQL, DuckDB, and automated testing.
 
